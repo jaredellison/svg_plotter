@@ -8,7 +8,7 @@ a cubic spline to a list of coordinates:
 
 http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf
 
-Roughly, the prodecure it to work with 5 points at a time and produce
+Roughly, the prodecure is to work with 5 points at a time and produce
 segments of curves that can be glued together at the end points. If the
 second derivative at the end point of two curves is equal, they can be 
 glued together seamlessly.
@@ -266,38 +266,5 @@ def make_curve(point_list):
 
     return path_string
 
-# points = [
-#     [100,50],
-#     [200,120],
-#     [300,140],
-#     [400,120],
-#     [500,50],
-#     [600,50],
-#     [700,120],
-#     [800,140],
-#     [900,120],
-#     [1000,50],
-#     [1100,50],
-#     [1200,120],
-#     [1300,140],
-#     [1400,120],
-#     [1500,50],
-#     ]
-
-# result = make_curve(points)
-
-# import svgwrite
-
-# dwg = svgwrite.Drawing(filename='big_matrix.svg', size=(2000,2000), debug=True)
-# paths = dwg.add(dwg.g(id='path', stroke_width=1, fill='white', fill_opacity="0"))
-# dots = dwg.add(dwg.g(id='dots', stroke_width=1, stroke='cornflowerblue', fill='cornflowerblue'))
-
-# paths.add(dwg.path(d=result,stroke='purple'))
-
-# for point in points:
-#     dots.add(dwg.circle(center=(point[0],point[1]), r=2))
-
-
-# dwg.save()
 
 
