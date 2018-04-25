@@ -23,7 +23,7 @@ are 1/3 and 2/3 of the way between consecutive B points.
 ######################
 # Finding the B and D Points
 ######################
-The B points first and last B points are the same as the first and last
+The first and last B points are the same as the first and last
 S points but the middle B points are found based on this equation.
 (subscript is denoted by an underscore and curly bracket):
 B_{i-1} + 4*B_{i} + B_{i+1} = 6*S_{i}
