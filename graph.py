@@ -4,8 +4,8 @@
 # Purpose: graphing microphone freqeuncy response
 # Created: 03.25.2018
 
-# Adapted from basic_shapes.py script provided with svgwrite-master
-#
+# Adapted from basic_shapes.py script provided with svgwrite-master module
+
 
 # try:
 #     import svgwrite
@@ -253,7 +253,6 @@ for response in datasets.responses:
 
 # for pair in datasets.responses[1]:
 #     draw_point(*log_scale(*pair), color='blue')
-
 
 
 dwg.save()
