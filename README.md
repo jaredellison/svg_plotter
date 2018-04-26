@@ -34,3 +34,4 @@ I began this project as a way to learn some new tools but if you're looking for 
 * **Kirby A. Baker** - *UCLA Math Dept.* - [Awesome handout on Bsplines](http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf)
 * **David Morrin** - *SVG Drawing Inspiration* - [davidmorrin.com](https://www.davidmorrin.com/)
 * **Billie Thompson** - *Github Readme Template* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Hendrick Wade Bode** - *Eponymous Plotting Style* - [Hendrick Wade Bode](https://en.wikipedia.org/wiki/Hendrik_Wade_Bode)

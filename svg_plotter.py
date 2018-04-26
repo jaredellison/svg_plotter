@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 #coding:utf-8
-# Author:  lucky_bloop
-# Purpose: graphing microphone freqeuncy response
+#
+# Author:  Jared Ellison
+# Site:  jaredellison.net
+# Purpose: Drawing frequency response bode plots from Room EQ Wizard data in SVG
 # Created: 03.25.2018
-
+#
 # Adapted from basic_shapes.py script provided with svgwrite-master module
 
-
-# try:
-#     import svgwrite
-# except ImportError:
-#     # if svgwrite is not 'installed' append parent dir of __file__ to sys.path
-#     import sys, os
-#     sys.path.insert(0, os.path.abspath(os.path.split(os.path.abspath(__file__))[0]+'/..'))
+# requirements.txt file is provided to install proper modules
+# run pip command in project directory to install everything:
+# pip install -r requirements.txt
 
 import svgwrite
 from svgwrite import px
@@ -25,14 +23,15 @@ import datasets
 g_size_x = 700
 g_size_y = 300
 
+# offset from left side and top of image
 g_offset_x = 120
 g_offset_y = 10
 
-# the frequency spread of the graph in Hz
+# the frequency range of the graph in Hz
 freq_min = 20
 freq_max = 20000
 
-# amplitude spread of the graph in dB
+# amplitude range of the graph in dB
 amp_min = 60
 amp_max = 95
 
@@ -40,17 +39,20 @@ amp_max = 95
 tot_size_x = 1000
 tot_size_y = 600
 
-filename = 'svg_output/graph.svg'
+# output file name
+filename = 'svg_output/output_plot.svg'
 
-# Graph Labels
+# graph label font
 graph_label_font = {
 'font_family':'sans-serif',
 'font_size':'12',
 'font_color':'black'
 }
 
+# list of colors to be applied to traces
 color_list = ['red','orange','yellow','green','blue','indigo','violet']
 
+# main drawing object to be modified
 dwg = svgwrite.Drawing(filename=filename, size=(tot_size_x*px, tot_size_y*px), debug=True)
 
 # .g() adds a group of items
@@ -99,6 +101,10 @@ def draw_point(
     y_start=g_offset_y, 
     y_end=(g_offset_y+g_size_y),
     color=''):
+    '''
+    This function draws a point on the graph. The inputs are in x and y, to plot a
+    point based on frequency and amplitude, use the log scale function to convert it.
+    '''
     
     # Skip points that are out of range
     if x <= x_start or x >= x_end or y <= y_start or y >= y_end:
@@ -107,30 +113,83 @@ def draw_point(
     dot = dwg.circle(center=(x*px, y*px), r='2px', fill=color, stroke=color, stroke_width=2)
     svg_group.add(dot)
 
-def draw_background(start_x = g_offset_x, start_y = g_offset_y, x_size = g_size_x, y_size = g_size_y):
-    shapes.add(dwg.rect(insert=(start_x*px, start_y*px), size=(x_size*px, y_size*px), fill='#eaeaea', stroke='#000000', stroke_width=1))
+def draw_background(
+    start_x = g_offset_x, 
+    start_y = g_offset_y, 
+    x_size = g_size_x, 
+    y_size = g_size_y):
+    '''
+    This function draws a rectangle behind the plotting area.
+    Call this function first so it's in the background.
+    '''
 
-def draw_h_lines(amp_min=amp_min, amp_max=amp_max, svg_group=scale_lines, g_offset_x=g_offset_x, g_offset_y=g_offset_y):
+    background_fill = '#eaeaea'
+    background_stroke = '#000000'
+    background_stroke_width = 1
+
+    shapes.add(dwg.rect(
+        insert=(start_x*px, start_y*px),
+        size=(x_size*px, y_size*px),
+        fill=background_fill,
+        stroke=background_stroke,
+        stroke_width=background_stroke_width))
+
+def draw_h_lines(
+    amp_min=amp_min, 
+    amp_max=amp_max,
+    svg_group=scale_lines,
+    g_offset_x=g_offset_x,
+    g_offset_y=g_offset_y):
+    '''
+    This function draws horizontal markers on the graph based on the range of amplitudes
+    plotted. Stroke thickness depends on multiples of 10, 5 and 1. The function returns
+    a list of horizontal lines plotted to help figure out where to put a label.
+    '''
+
     line_coords = []
-    for i in range(amp_min,amp_max):
-        line_start = log_scale(freq_min,i)
-        line_end = log_scale(freq_max,i)
+    for a in range(amp_min,amp_max):
+        line_start = log_scale(freq_min,a)
+        line_end = log_scale(freq_max,a)
         
-        line_coords.append([i,(line_start,line_end)])
-        if i % 10 == 0:
-            line = dwg.line(start=line_start, end=line_end, stroke_width=1)
-            # (str(i), insert=None, x=None, y=None, dx=None, dy=None, rotate=None, **extra)      
-        elif i % 5 == 0:
+        # Add to the list of lines
+        line_coords.append([a,(line_start,line_end)])
+
+        # Change the stroke width depending if it's a multiple of 10, 5 or 1
+        if a % 10 == 0:
+            line = dwg.line(start=line_start, end=line_end, stroke_width=1) 
+        elif a % 5 == 0:
             line = dwg.line(start=line_start, end=line_end, stroke_width=.5)
         else:
             line = dwg.line(start=line_start, end=line_end, stroke_width=.25)        
+
+        # Draw the line
         svg_group.add(line)
+
     return line_coords
 
-def draw_v_lines(freq_min=freq_min, freq_max=freq_max, svg_group=scale_lines, g_offset_x=g_offset_x, g_offset_y=g_offset_y):
+def draw_v_lines(
+    freq_min=freq_min, 
+    freq_max=freq_max, 
+    svg_group=scale_lines, 
+    g_offset_x=g_offset_x, 
+    g_offset_y=g_offset_y):
+    '''
+    This function draws vertical markers on the graph based on the range of frequencies
+    plotted. For a bode plot with a logarithmic scale, we're interested in major markers at
+    powers of 10 and minor markers at integer multiples of that power of 10 leading up
+    to the next marker:
+    10^n * 1, 10^n * 2, 10^n * 3 ... 10^n+1 * 1
+    Strokes are thicker at powers of 10. The function returns a list of vertical lines 
+    plotted to help figure out where to put a label.
+    '''
+
+    # list of frequencies to mark with vertical lines
     vlines = []
-    # major lines   
+
+    # a list to track the frequencies plotted and the start and end points of the line
+    # this is for figuring out where to draw a label
     line_coords = []
+
     f = freq_min 
     while(f <= freq_max):
         power = log10(f)
@@ -145,18 +204,19 @@ def draw_v_lines(freq_min=freq_min, freq_max=freq_max, svg_group=scale_lines, g_
 
     # print('Line coords pre loop: ' + str(line_coords))
 
+
     for i in range(len(vlines)):
         line_start = log_scale(vlines[i],amp_max)
-        # print('start  '+str(line_start))
         line_end = log_scale(vlines[i],amp_min)
-        # print('end    '+str(line_end))
+
         line_coords[i].append((line_start,line_end))
+
+        # use a thicker stroke for powers of 10
         if str(vlines[i]).startswith('10'): 
-            # print('starts with' + str(vlines[i]))
             line = dwg.line(start=line_start, end=line_end, stroke_width=1)
         else: 
-            # print('else' + str(vlines[i]))
             line = dwg.line(start=line_start, end=line_end, stroke_width=.25)
+
         svg_group.add(line)
 
     return line_coords
@@ -164,8 +224,16 @@ def draw_v_lines(freq_min=freq_min, freq_max=freq_max, svg_group=scale_lines, g_
     # print('Line coords post loop: ')
     # for l in line_coords: print(l)
 
-def draw_lable(text, x, y, rotate, svg_group=line_labels, font_family='', 
-    font_size='', font_color=''):
+def draw_lable(
+    text, 
+    x, 
+    y, 
+    rotate, 
+    svg_group=line_labels, 
+    font_family='', 
+    font_size='', 
+    font_color=''):
+
     msg = dwg.text(
     text,
     insert=(x,y),
@@ -198,8 +266,16 @@ def add_h_labels(line_list, label_font):
         if text % 5 == 0:
             draw_lable(text, start_point[0]+x_offset, start_point[1]+y_offset, rotation, **label_font)
 
-def draw_axis_lable(text, x, y, rotate, svg_group=line_labels, font_family='', 
-    font_size='', font_color=''):
+def draw_axis_lable(
+    text, 
+    x, 
+    y, 
+    rotate, 
+    svg_group=line_labels, 
+    font_family='', 
+    font_size='', 
+    font_color=''):
+
     msg = dwg.text(
     text,
     insert=(x,y),
@@ -211,14 +287,14 @@ def draw_axis_lable(text, x, y, rotate, svg_group=line_labels, font_family='',
 
     svg_group.add(msg)
 
+# Draw graph background first
 draw_background()
 
+# Draw markers and capture the lists of lines drawn
 hline_list = draw_h_lines()
-
-print(hline_list)
-
 vline_list = draw_v_lines()
 
+# Label makers and axes
 add_v_labels(vline_list, graph_label_font)
 
 draw_axis_lable('Frequency in Hz', g_size_x + g_offset_x + 30, g_size_y + g_offset_y + 10, 0, **graph_label_font)
@@ -227,10 +303,9 @@ add_h_labels(hline_list, graph_label_font)
 
 draw_axis_lable('Amplitude in dB', g_offset_x - 90, g_offset_y + 5, 0, **graph_label_font)
 
-
 paths = dwg.add(dwg.g(id='path', stroke_width=2, fill='white', fill_opacity="0"))
-dots = dwg.add(dwg.g(id='dots', stroke_width=1, stroke='cornflowerblue', fill='cornflowerblue'))
 
+dots = dwg.add(dwg.g(id='dots', stroke_width=1, stroke='cornflowerblue', fill='cornflowerblue'))
 
 import bspline_maker
 
