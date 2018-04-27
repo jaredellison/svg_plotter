@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #coding:utf-8
 #
 # Author:  Jared Ellison
@@ -10,14 +10,24 @@
 
 # requirements.txt file is provided to install proper modules
 # run pip command in project directory to install everything:
-# pip install -r requirements.txt
+# pip install -r requirements.txtwh
 
+# external modules
 import svgwrite
 from svgwrite import px
 
+# standard library modules
 from math import log10, floor, pow, ceil
+from colorsys import hls_to_rgb
 
+# project specific modules
 import datasets
+
+##################################
+#
+#   Parameters
+#
+##################################
 
 # size of graph
 g_size_x = 700
@@ -64,6 +74,12 @@ scale_lines = dwg.add(dwg.g(id='scale_lines', fill='grey', stroke='grey'))
 
 line_labels = dwg.add(dwg.g(id='labels', fill='black'))
 
+
+##################################
+#
+#   Function Definitions
+#
+##################################
 
 def log_scale(
     f,
@@ -190,20 +206,20 @@ def draw_v_lines(
     # this is for figuring out where to draw a label
     line_coords = []
 
+    # Start with the minimum frequency
     f = freq_min 
     while(f <= freq_max):
+        # figure out which order of magnitude f is in
         power = log10(f)
         power = floor(power)
+        # step is used to increment f
         step = pow(10, power)
         freq = ceil(f/step) * step
-        if not freq > freq_max:
+        if freq < freq_max:
             line_coords.append([freq,])
-            vlines.append(ceil(f/step) * step)
-
+            vlines.append(freq)
+        # increment f to the next frequency of interest
         f = f + step
-
-    # print('Line coords pre loop: ' + str(line_coords))
-
 
     for i in range(len(vlines)):
         line_start = log_scale(vlines[i],amp_max)
@@ -216,13 +232,10 @@ def draw_v_lines(
             line = dwg.line(start=line_start, end=line_end, stroke_width=1)
         else: 
             line = dwg.line(start=line_start, end=line_end, stroke_width=.25)
-
+        # draw the line
         svg_group.add(line)
 
     return line_coords
-
-    # print('Line coords post loop: ')
-    # for l in line_coords: print(l)
 
 def draw_lable(
     text, 
@@ -246,23 +259,27 @@ def draw_lable(
     svg_group.add(msg)
 
 def add_v_labels(line_list, label_font):
+    '''
+    This function draws labels for vertical markers.
+    '''
     for item in line_list:
         text = int(item[0])
         end_point = item[1][1]
         y_offset = 10
         rotation = 45
-        # print('text: ' + str(text) + ' end_point: ' + str(end_point))
         if str(text).startswith('1') or str(text).startswith('5'):
             draw_lable(text, end_point[0], end_point[1] + y_offset, rotation, **label_font)
 
 def add_h_labels(line_list, label_font):
+    '''
+    This function draws labels for horizontal markers.
+    '''
     for item in line_list:
         text = int(item[0])
         start_point = item[1][0]
         x_offset = -20
         y_offset = 4
         rotation = 0
-        # print('text: ' + str(text) + ' end_point: ' + str(end_point))
         if text % 5 == 0:
             draw_lable(text, start_point[0]+x_offset, start_point[1]+y_offset, rotation, **label_font)
 
@@ -287,6 +304,60 @@ def draw_axis_lable(
 
     svg_group.add(msg)
 
+
+def angle_to_hex_triplet(rotation, saturation=.5, luminance=.7):
+    '''
+    This function takes an angle between 0 and 360 and outputs a string of hex for use
+    as an html color.
+
+    Rotation is in degrees, saturation and luminance are floats between 0 and 1.
+
+    For example:
+    Rotation =   0, Luminance = 0, Saturation = 0 ---> 000000
+    Rotation =   0, Luminance = 1, Saturation = 0 ---> FFFFFF
+    Rotation =   0, Luminance = .5, Saturation = 1 ---> FF0000
+    Rotation = 120, Luminance = .5, Saturation = 1 ---> 00FF00
+    Rotation = 240, Luminance = .5, Saturation = 1 ---> 0000FF
+    Rotation = 360, Luminance = .5, Saturation = 1 ---> FF0000
+    '''
+
+    # Result to return
+    res = ''
+    rgb_tup = hls_to_rgb((rotation/360),luminance,saturation)
+    # print ('rgb_tup', rgb_tup)
+
+    for i in rgb_tup:
+        i = int(i * 255)
+        hex_s = ''
+        hex_s += hex(i)
+        if (i * 255) < 16:
+            hex_s = '0' + hex_s[-1]
+            res += hex_s
+        else:
+            res += hex_s[-2:]
+
+    return '#' + res
+
+def get_trace_color(total_traces):
+    '''
+    This generator function is used to establish a sequence of colors that are 
+    as far away from each other as the size of the dataset allows. Pass it the
+    total number of traces in the graph and it will return the next color in html
+    hex triplet style every time it is passed to next().
+    '''
+
+    for trace in range(total_traces):
+        yield angle_to_hex_triplet(trace*(360/total_traces))
+
+
+##################################
+#
+#   Main Action
+#
+##################################
+
+trace_colors = get_trace_color(len(datasets.responses))
+
 # Draw graph background first
 draw_background()
 
@@ -294,7 +365,7 @@ draw_background()
 hline_list = draw_h_lines()
 vline_list = draw_v_lines()
 
-# Label makers and axes
+# Label markers and axes
 add_v_labels(vline_list, graph_label_font)
 
 draw_axis_lable('Frequency in Hz', g_size_x + g_offset_x + 30, g_size_y + g_offset_y + 10, 0, **graph_label_font)
@@ -311,7 +382,7 @@ import bspline_maker
 
 def plot_path(dataset):
     log_points = []
-    print(dataset)
+    # print(dataset)
     for pair in dataset:
         entry = list(log_scale(*pair))
         log_points.append(entry)
@@ -320,14 +391,8 @@ def plot_path(dataset):
 
 for response in datasets.responses:
     path_string = plot_path(response)
-    paths.add(dwg.path(d=path_string,stroke='orange'))
-
-
-# for pair in datasets.responses[0]:
-#     draw_point(*log_scale(*pair), color='orange')
-
-# for pair in datasets.responses[1]:
-#     draw_point(*log_scale(*pair), color='blue')
+    # paths.add(dwg.path(d=path_string,stroke='#000000'))
+    paths.add(dwg.path(d=path_string,stroke=next(trace_colors)))
 
 
 dwg.save()

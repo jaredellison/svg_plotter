@@ -218,9 +218,9 @@ def make_curve(point_list):
 
     # Creating a list of division points:
 
-    print('b_points')
-    for point in b_points:
-        print(point)       
+    # print('b_points')
+    # for point in b_points:
+    #     print(point)       
 
     d_points = []
     
@@ -257,9 +257,9 @@ def make_curve(point_list):
             s_points[s_count+1][0], 
             s_points[s_count+1][1]
             ]
-        print('path_list: ')
-        for item in path_list:
-            print(item)
+        # print('path_list: ')
+        # for item in path_list:
+        #     print(item)
         path_string += 'M %f %f C %f,%f %f,%f %f,%f ' % tuple(path_list)
         s_count += 1
         d_count += 2
