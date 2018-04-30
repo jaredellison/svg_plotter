@@ -31,6 +31,7 @@ I began this project as a way to learn some new tools but if you're looking for 
 ## Acknowledgments
 
 * **John Mulcahy** - *Excellent free audio test suite* - [Room EQ Wizard](https://www.roomeqwizard.com)
+* **Nash Vail** - *Clear explanation of cubic bezier curves* - [Nerding Out with Bezier Curves](https://medium.freecodecamp.org/nerding-out-with-bezier-curves-6e3c0bc48e2f)
 * **Kirby A. Baker** - *UCLA Math Dept.* - [Awesome handout on Bsplines](http://www.math.ucla.edu/~baker/149.1.02w/handouts/dd_splines.pdf)
 * **David Morrin** - *SVG Drawing Inspiration* - [davidmorrin.com](https://www.davidmorrin.com/)
 * **Billie Thompson** - *Github Readme Template* - [PurpleBooth](https://github.com/PurpleBooth)
