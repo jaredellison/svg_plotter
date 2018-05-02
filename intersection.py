@@ -38,7 +38,7 @@ def find_intersect(y,bez):
     When expanded that can be written as:
     B(t) =
     P0( -t^3 + 3t^2 - 3t + 1 ) +
-    P1(    0 + 3t^2 - 6t + 3 ) + 
+    P1( 3t^3 - 6t^2 + 3t + 0 ) +
     P2(-3t^3 + 3t^2 -  0 + 0 ) +
     P3(  t^3 +    0 -  0 + 0 )
 
@@ -46,25 +46,39 @@ def find_intersect(y,bez):
     where B(t)_y is equal to the y intercept.
     
     Numpy's roots function can be used to solve to find the value of t. It takes a
-    list cooeficients A,B,C,D as its parameter. To find these we can multiply the y value of
-    each bezier control point through each expanded polynomials and the coefficent of each
-    element.
-
+    list cooeficients A,B,C,D as its parameter. To find these we can multiply the 
+    y value of each bezier control point through each expanded polynomial and sum 
+    the coefficient preceding each element to find A,B,C,D.  
+    '''
+    A = -1*bez[0][1] +  3*bez[1][1] + -3*bez[2][1] + 1*bez[3][1]
+    B =  3*bez[0][1] + -6*bez[1][1] +  3*bez[2][1] + 0*bez[3][1]
+    C = -3*bez[0][1] +  3*bez[1][1] +  0*bez[2][1] + 0*bez[3][1]
+    D =  1*bez[0][1] +  0*bez[1][1] +  0*bez[2][1] + 0*bez[3][1]
 
     '''
+    The fourth element is D-y because we need to find where the roots are zero.
+    This is the quivalent of subtracting the Y offset from both sides:
+    y = ((1-t)^3)*P0 + 3((1-t)^2)*t*P1 + 3(1-t)(t^2)P2 + (t^3)*P3
+    0 = ((1-t)^3)*P0 + 3((1-t)^2)*t*P1 + 3(1-t)(t^2)P2 + (t^3)*P3 - y
 
-    # # ((1-t)^3)*bez[0][1] + 3((1-t)^2)*t*bez[1][1] + 3(1-t)(t^2)*bez[2][1] + (t^3)*bez[3][1]
-    # P0_y*(1 - 3 t + 3 t^2 - t^3)  + 3 * P1_y * (t - 2 t^2 + t^3) + 
-
-    A = -1*bez[0][1] +  0*bez[1][1] + -3*bez[2][1] +   bez[3][1]
-    B =  3*bez[0][1] +  3*bez[1][1] + -3*bez[2][1] + 0*bez[3][1]
-    C = -3*bez[0][1] + -6*bez[1][1] +  0*bez[2][1] + 0*bez[3][1]
-    D =  1*bez[0][1] +  3*bez[1][1] +  0*bez[2][1] + 0*bez[3][1]
+    '''
+    print('A,B,C,D:',A,',',B,',',C,',',D)
 
     coeff = [A,B,C,D-y]
 
-    intersecction = np.roots(coeff).real
+    t_params = np.roots(coeff)
 
-find_intersect(60,test_curve)
+    for t in t_params:
+        if t > 0 and t < 1:
+            print('t :',t)
+    # Plug t into x side of cubic bezier function to find B(t)_x
+            x = (((1-t)**3)*bez[0][0]) + (bez[1][0]*(3*t - 6*t**2 + 3*t**3)) + ((3*t**2 - 3*t**3)*bez[2][0]) + ((t**3)*bez[3][0])
+
+            return (x,y)
+
+# -17.7276 t^3 + 38.0385 t^2 - 0.310881 t + 50
+
+
+print(find_intersect(60,test_curve))
 
 
