@@ -85,7 +85,7 @@ def interpolate_points(total_points,bez = test_curve):
         total_points (int) -> how many points to return
     
     Returns:
-        points (list of lists) -> the point of intersection: [x, y]
+        b_points (list of lists) -> the point of intersection: [x, y]
     '''
     
     # Create a list of points T between 0 and 1 based on the number of total_points
@@ -98,12 +98,12 @@ def interpolate_points(total_points,bez = test_curve):
         t_points.append(t_count)
         t_count += t_step
 
-    res = []
+    b_points = []
 
     # Plug t values into expanded form of bezier curve function. 
     for t in t_points:
         x = (((1-t)**3)*bez[0][0]) + (bez[1][0]*(3*t - 6*t**2 + 3*t**3)) + ((3*t**2 - 3*t**3)*bez[2][0]) + ((t**3)*bez[3][0])
         y = (((1-t)**3)*bez[0][1]) + (bez[1][1]*(3*t - 6*t**2 + 3*t**3)) + ((3*t**2 - 3*t**3)*bez[2][1]) + ((t**3)*bez[3][1])
-        res.append([x,y])
+        b_points.append([x,y])
 
-    return res
+    return b_points
