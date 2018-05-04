@@ -12,8 +12,6 @@ test_curve = [[50.000000, 50.000000], [61.182443,49.896373], [80.106218,62.47224
 # B(t)_x = ((1-t)^3)*50 + 3((1-t)^2)*t*61.182443 + 3(1-t)(t^2)*80.106218 + (t^3)*80  where t = .612255
 # Used wolframalpha.com to solve for B(0.612255)_x = 73.101
 
-left(((1-t)^3)*50+3((1-t)^2)*t*61.182443+3(1-t)(t^2)80.106218+(t^3)*50),\ ((1-t)^3)*50+3((1-t)^2)*t*49.896373+3(1-t)(t^2)62.472243+(t^3)*50\right)
-
 def find_intersect(y,bez):
     '''
     This function finds the intersection point between a horizontal line and a bezier curve.
@@ -25,14 +23,8 @@ def find_intersect(y,bez):
             [[P0x1 - 2 t + t^2, P0y], [P1x, P1y], [P2x, P2y], [P3x, P3y]]
     
     Returns:
-        intersect (list) -> the poit of intersection: [x, y]
-    '''
-    print('y offset: ', y)
-
-    print('P y coordinates:')
-    print(bez[0][1], bez[1][1], bez[2][1], bez[3][1])
-
-    '''
+        intersect (list) -> the point of intersection: [x, y]
+    
     The general equation for a bezier curve is:
     B(t) = ((1-t)^3)*P0 + 3((1-t)^2)*t*P1 + 3(1-t)(t^2)P2 + (t^3)*P3
 
@@ -79,6 +71,39 @@ def find_intersect(y,bez):
 
 
 
-print(find_intersect(60,test_curve))
+# print(find_intersect(60,test_curve))
 
 
+def interpolate_points(total_points,bez = test_curve):
+    '''
+    This function plots a number of points along a bezier curve.
+
+    Args:
+        bez (list) -> a list of lists containing 4 control 
+            points for a cubic bezier curve using the format:
+            [[P0x1 - 2 t + t^2, P0y], [P1x, P1y], [P2x, P2y], [P3x, P3y]]
+        total_points (int) -> how many points to return
+    
+    Returns:
+        points (list of lists) -> the point of intersection: [x, y]
+    '''
+    
+    # Create a list of points T between 0 and 1 based on the number of total_points
+    t_points = []
+
+    t_step = 1/total_points
+    t_count = 0
+
+    while t_count <= 1:
+        t_points.append(t_count)
+        t_count += t_step
+
+    res = []
+
+    # Plug t values into expanded form of bezier curve function. 
+    for t in t_points:
+        x = (((1-t)**3)*bez[0][0]) + (bez[1][0]*(3*t - 6*t**2 + 3*t**3)) + ((3*t**2 - 3*t**3)*bez[2][0]) + ((t**3)*bez[3][0])
+        y = (((1-t)**3)*bez[0][1]) + (bez[1][1]*(3*t - 6*t**2 + 3*t**3)) + ((3*t**2 - 3*t**3)*bez[2][1]) + ((t**3)*bez[3][1])
+        res.append([x,y])
+
+    return res
