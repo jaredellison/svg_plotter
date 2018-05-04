@@ -382,17 +382,81 @@ import bspline_maker
 
 def plot_path(dataset):
     log_points = []
-    # print(dataset)
     for pair in dataset:
         entry = list(log_scale(*pair))
         log_points.append(entry)
 
     return bspline_maker.make_curve(log_points)
 
+def diagnostic_path(dataset):
+    '''
+    This function is a linear parallel to the plot_path function for troubleshooting.
+    It aims to pass the original dataset values to the bspline_maker.make_curve() function.
+    '''
+    lin_points = []
+    for pair in dataset:
+        print(pair)
+        entry = pair
+        lin_points.append(entry)
+
+    return bspline_maker.make_curve(lin_points)
+
+
+# def split_path_string(
+#     string_in,
+
+#     ):
+#     '''
+#     This function takes an svg formated string of control points 
+#     '''
+
 for response in datasets.responses:
     path_string = plot_path(response)
-    # paths.add(dwg.path(d=path_string,stroke='#000000'))
+    d = "M"
+    point_list  =  [d+e for e in path_string.split(d) if e]
+    print('log point_list: ')
+    [print(segment) for segment in point_list]
+
     paths.add(dwg.path(d=path_string,stroke=next(trace_colors)))
+    for point in response:
+        draw_point(*log_scale(*point))
+
+
+#
+# This area is for troubleshooting, it does the same as above but just prints
+# the list of points, it doesn't 
+for response in datasets.responses:
+    path_string = diagnostic_path(response)
+    d = "M"
+    point_list  =  [d+e for e in path_string.split(d) if e]
+    print('lin point_list: ')
+    [print(segment) for segment in point_list]
+
+    # paths.add(dwg.path(d=path_string,stroke=next(trace_colors)))
+    # for point in response:
+    #     draw_point(*log_scale(*point))
+
+
+paths.add(dwg.path(d="M 212.852669 395.714286 C 229.336193,396.602517 253.006439,288.809348 260.480665,224.285714",
+        stroke="green"))
+
+
+#
+# 
+# M 50.000000 50.000000 C 61.182443,49.896373 80.106218,62.472243 80.000000,70.000000 
+
+# Take Y values and plug into equation:
+# B(t)_y = ((1-t)^3)*P0_y + 3((1-t)^2)*t*P1_y + 3(1-t)(t^2)P2_y + (t^3)*P3_y
+# B(t)_y = ((1-t)^3)*50 + 3((1-t)^2)*t*49.896373 + 3(1-t)(t^2)*62.472243 + (t^3)*70
+# Used wolframalpha.com to solve for t... t = 0.612255
+
+# Plug t into x side of cubic bezier function to find B(t)_x
+# B(t)_x = ((1-t)^3)*P0_x + 3((1-t)^2)*t*P1_x + 3(1-t)(t^2)P2_x + (t^3)*P3_x
+# B(t)_x = ((1-t)^3)*50 + 3((1-t)^2)*t*61.182443 + 3(1-t)(t^2)*80.106218 + (t^3)*80  where t = .612255
+# Used wolframalpha.com to solve for B(0.612255)_x = 73.101
+
+draw_point(*log_scale(73.101,60.00001))
+
 
 
 dwg.save()
