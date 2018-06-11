@@ -62,7 +62,7 @@ M S_{0 X} S_{0 Y} C D_{0 X},D_{0 Y} D_{1 X},D_{1 Y} S_{0 X},S_{0 Y}
 
 The type of bezier curve we have generated has relaxed endpoints,
 meaning the second derivative of the curve is 0 at the end points.
-The fully sequence of points we've generated is:
+The ful sequence of points we've generated is:
 S_{0}, D_{0}, D_{1}, S_{1}, D_{2}, D_{3}, 
 S_{2}, D_{4}, D_{5}, S_{3}, D_{6}, D_{7}, S_{4}
 
