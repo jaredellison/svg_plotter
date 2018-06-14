@@ -18,6 +18,10 @@ Room EQ Wizard does allow exporting a list of data points and this list can be u
 
 I began this project as a way to learn some new tools but if you're looking for a nice way to plot some data, there are probably some easier more flexible ways. If you're set on using Python check out: [Matplotlib](https://matplotlib.org/), [Seaborn](https://seaborn.pydata.org/) and [Bokeh](https://bokeh.pydata.org/). If your project is all about the web, it might make sense to do everything in javascript with: [D3.js](https://d3js.org/).
 
+## Work In Progress!
+
+This project is very much a work in progress. Work to do includes finding a way to keep graph traces in bounds of the plotting area, exporting SVG plots with appropriate SVG classes and ids for stlying with css and more.
+
 ## Tools Used
 
 * [Room EQ Wizard](https://www.roomeqwizard.com) - Free Audio Test software to make measurements and export data to plot
