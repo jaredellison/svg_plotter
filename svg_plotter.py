@@ -155,7 +155,7 @@ def draw_background(
     Call this function first so it's in the background.
     '''
 
-    background_fill = '#eaeaea'
+    background_fill = '#fcfcfc'
     background_stroke = '#000000'
     background_stroke_width = 1
 
