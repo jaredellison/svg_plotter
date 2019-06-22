@@ -47,6 +47,13 @@ amp_range = (60, 95)
 # amp_min = 60
 # amp_max = 95
 
+# graph label font
+graph_label_font = {
+    'font_family': 'sans-serif',
+    'font_size': '12',
+    'font_color': 'black'
+}
+
 ############################################################
 #
 #    Graph Class
