@@ -13,7 +13,8 @@
 # pip install -r requirements.txt
 
 # external modules
-import utils.bspline
+import utils.bspline as bspline
+from utils.color import get_trace_color
 import svgwrite
 from svgwrite import px
 import numpy as np
@@ -363,7 +364,7 @@ if __name__ == "__main__":
             entry = list(log_scale(*pair))
             log_points.append(entry)
 
-        return bspline_maker.make_curve(log_points)
+        return bspline.make_curve(log_points)
 
     for response in datasets.responses:
         path_string = plot_path(response)
