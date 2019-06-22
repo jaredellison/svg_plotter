@@ -58,47 +58,62 @@ graph_label_font = {
 #
 #    Graph Class
 
+
 class Graph:
     def __init__(
         self,
-        ):
-        self.a = 'alpha'
+        total_size=total_size,
+        graph_size=graph_size,
+        graph_offset=graph_offset,
+        freq_range=freq_range,
+        amp_range=amp_range
+    ):
+        self.total_size = total_size
+        self.graph_size = graph_size
+        self.graph_offset = graph_offset
+        self.freq_range = freq_range
+        self.amp_range = amp_range
         self.traces = []
 
     def render(self, output_path):
         pass
 
     def add_trace(self, trace):
-        self.traces.append()
+        self.traces.append(trace)
 
     ########################################
     #  Utility Methods
 
-    # def log_scale(
-    #     f,
-    #     a,
-    #     f_start=freq_min,
-    #     f_end=freq_max,
-    #     x_start=g_offset_x,
-    #     x_end=(g_offset_x+g_size_x),
-    #     a_min=amp_min,
-    #     a_max=amp_max,
-    #     y_start=g_offset_y,
-    #     y_end=(g_size_y+g_offset_y)):
-    #     '''
-    #     This function takes a frequency (Hz) and amplitude (dB) and outputs an x,y coordinate
-    #     pair as a tuple.
-    #     '''
+    def log_scale(self, f, a):
+        # f_start=freq_min,
+        # f_end=freq_max,
+        # x_start=g_offset_x,
+        # x_end=(g_offset_x+g_size_x),
+        # a_min=amp_min,
+        # a_max=amp_max,
+        # y_start=g_offset_y,
+        # y_end=(g_size_y+g_offset_y)
+        '''
+        This function takes a frequency (Hz) and amplitude (dB) and outputs an
+         x,y coordinate pair as a tuple.
+        '''
 
-    #     # Scale frequency input to a fraction of the specified spectrum
-    #     x = ((log10(f)-log10(freq_min))/(log10(freq_max) - log10(freq_min)))
-    #     # Apply that fraction to the width of the graph
-    #     x = (x * (x_end-x_start)) + x_start
+        # Scale frequency input to a fraction of the specified spectrum
+        x = ((log10(f)-log10(self.freq_range[0])) /
+             (log10(self.freq_range[1]) - log10(self.freq_range[0])))
+        # Apply that fraction to the width of the graph
+        x_end = self.graph_offset[0] + self.graph_size[0]
+        x_start = self.graph_offset[0]
+        x = (x * (x_end - x_start)) + x_start
 
-    #     y = (a - a_min)/(a_max - a_min)
-    #     y = y * (y_end-y_start)
-    #     y = ((y_end-y_start) - y) + y_start
-    #     return (x, y)
+        # Scale amplitude input
+        y = (a - self.amp_range[0])/(self.amp_range[1] - self.amp_range[0])
+
+        y_end = self.graph_offset[1] + self.graph_size[1]
+        y_start = self.graph_offset[1]
+        y = y * (y_end - y_start)
+        y = ((y_end - y_start) - y) + y_start
+        return (x, y)
 
     ########################################
     #  Render Methods
@@ -125,7 +140,6 @@ class Graph:
     #                     fill=color, stroke=color, stroke_width=2)
     #     svg_group.add(dot)
 
-
     # def draw_background(
     #         start_x=g_offset_x,
     #         start_y=g_offset_y,
@@ -146,7 +160,6 @@ class Graph:
     #         fill=background_fill,
     #         stroke=background_stroke,
     #         stroke_width=background_stroke_width))
-
 
     # def draw_h_lines(
     #         amp_min=amp_min,
@@ -180,7 +193,6 @@ class Graph:
     #         svg_group.add(line)
 
     #     return line_coords
-
 
     # def draw_v_lines(
     #         freq_min=freq_min,
@@ -257,7 +269,6 @@ class Graph:
 
     #     svg_group.add(msg)
 
-
     # def add_v_labels(line_list, label_font):
     #     '''
     #     This function draws labels for vertical markers.
@@ -270,7 +281,6 @@ class Graph:
     #         if str(text).startswith('1') or str(text).startswith('5'):
     #             draw_lable(text, end_point[0], end_point[1] +
     #                     y_offset, rotation, **label_font)
-
 
     # def add_h_labels(line_list, label_font):
     #     '''
@@ -285,7 +295,6 @@ class Graph:
     #         if text % 5 == 0:
     #             draw_lable(
     #                 text, start_point[0]+x_offset, start_point[1]+y_offset, rotation, **label_font)
-
 
     # def draw_axis_lable(
     #         text,
