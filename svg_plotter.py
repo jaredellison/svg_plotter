@@ -25,11 +25,12 @@ from colorsys import hls_to_rgb
 # project specific modules
 import datasets
 
-##################################
-#
-#   Parameters
-#
-##################################
+########################################
+#  Default Parameters
+
+# total size of the generated svg including space for a legend
+tot_size_x = 1000
+tot_size_y = 600
 
 # size of graph
 g_size_x = 700
@@ -47,10 +48,6 @@ freq_max = 20000
 amp_min = 60
 amp_max = 95
 
-# total size of the generated svg including space for a legend
-tot_size_x = 1000
-tot_size_y = 600
-
 # output file name
 filename = 'svg_output/output_plot.svg'
 
@@ -64,36 +61,11 @@ graph_label_font = {
 # list of colors to be applied to traces
 color_list = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 
-# main drawing object to be modified
-dwg = svgwrite.Drawing(filename=filename, size=(
-    tot_size_x*px, tot_size_y*px), debug=True)
-
-# .g() adds a group of items
-shapes = dwg.add(dwg.g(id='shapes'))
-
-trace = dwg.add(dwg.g(id='trace'))
-
-scale_lines = dwg.add(dwg.g(id='scale_lines', fill='grey', stroke='grey'))
-
-line_labels = dwg.add(dwg.g(id='labels', fill='black'))
-
-# set up clip mask to
-mask = dwg.mask(id='curveMask')
-
-mask.add(dwg.rect(
-        insert=(g_offset_x, g_offset_y),
-        size=(g_size_x, g_size_y),
-        fill="white"))
-
-dwg.add(mask)
-
-
 ##################################
 #
 #   Function Definitions
 #
 ##################################
-
 
 def log_scale(
         f,
@@ -255,7 +227,6 @@ def draw_v_lines(
 
     return line_coords
 
-
 def draw_lable(
         text,
         x,
@@ -328,6 +299,8 @@ def draw_axis_lable(
 
     svg_group.add(msg)
 
+########################################
+#  Color Functions
 
 def angle_to_hex_triplet(rotation, saturation=.5, luminance=.7):
     '''
@@ -348,7 +321,6 @@ def angle_to_hex_triplet(rotation, saturation=.5, luminance=.7):
     # Result to return
     res = ''
     rgb_tup = hls_to_rgb((rotation/360), luminance, saturation)
-    # print ('rgb_tup', rgb_tup)
 
     for i in rgb_tup:
         i = int(i * 255)
@@ -374,244 +346,78 @@ def get_trace_color(total_traces):
     for trace in range(total_traces):
         yield angle_to_hex_triplet(trace*(360/total_traces))
 
-
-##################################
+############################################################
 #
-#   Main Action
-#
-##################################
+#    Main
 
-trace_colors = get_trace_color(len(datasets.responses))
+if __name__ == "__main__":
+    ####################
+    #  Initialize graph
 
-# Draw graph background first
-draw_background()
+    # Create a dwg object
+    dwg = svgwrite.Drawing(filename=filename, size=(
+        tot_size_x*px, tot_size_y*px), debug=True)
 
-# Draw markers and capture the lists of lines drawn
-hline_list = draw_h_lines()
-vline_list = draw_v_lines()
+    # Add groups to the dwg object
+    shapes = dwg.add(dwg.g(id='shapes'))
 
-# Label markers and axes
-add_v_labels(vline_list, graph_label_font)
+    trace = dwg.add(dwg.g(id='trace'))
 
-draw_axis_lable('Frequency in Hz', g_size_x + g_offset_x + 30,
-                g_size_y + g_offset_y + 10, 0, **graph_label_font)
+    scale_lines = dwg.add(dwg.g(id='scale_lines', fill='grey', stroke='grey'))
 
-add_h_labels(hline_list, graph_label_font)
+    line_labels = dwg.add(dwg.g(id='labels', fill='black'))
 
-draw_axis_lable('Amplitude in dB', g_offset_x - 90,
-                g_offset_y + 5, 0, **graph_label_font)
+    # Add clip mask to bound traces
+    mask = dwg.mask(id='curveMask')
 
-paths = dwg.add(dwg.g(id='path', stroke_width=2,
-                      fill='white', fill_opacity="0", mask="url(#curveMask)"))
+    mask.add(dwg.rect(
+        insert=(g_offset_x, g_offset_y),
+        size=(g_size_x, g_size_y),
+        fill="white"))
 
-# dots = dwg.add(dwg.g(id='dots', stroke_width=1,
-#                      stroke='cornflowerblue', fill='cornflowerblue'))
+    dwg.add(mask)
 
-def plot_path(dataset):
-    log_points = []
-    for pair in dataset:
-        entry = list(log_scale(*pair))
-        log_points.append(entry)
+    # Establish trace colors
+    trace_colors = get_trace_color(len(datasets.responses))
 
-    return bspline_maker.make_curve(log_points)
+    ####################
+    #  Render graph
 
+    # Background
+    draw_background()
 
-# def diagnostic_path(dataset):
-#     '''
-#     This function is a linear parallel to the plot_path function for troubleshooting.
-#     It aims to pass the original dataset values to the bspline_maker.make_curve() function.
-#     '''
-#     lin_points = []
-#     for pair in dataset:
-#         print(pair)
-#         entry = pair
-#         lin_points.append(entry)
+    hline_list = draw_h_lines()
+    vline_list = draw_v_lines()
 
-#     return bspline_maker.make_curve(lin_points)
+    # Axes and labels
+    add_v_labels(vline_list, graph_label_font)
 
+    draw_axis_lable('Frequency in Hz', g_size_x + g_offset_x + 30,
+                    g_size_y + g_offset_y + 10, 0, **graph_label_font)
 
-# def split_path_string(
-#     string_in,
+    add_h_labels(hline_list, graph_label_font)
 
-#     ):
-#     '''
-#     This function takes an svg formated string of control points
-#     '''
+    draw_axis_lable('Amplitude in dB', g_offset_x - 90,
+                    g_offset_y + 5, 0, **graph_label_font)
 
-for response in datasets.responses:
-    path_string = plot_path(response)
-    d = "M"
-    point_list = [d+e for e in path_string.split(d) if e]
-    print('log point_list: ')
-    [print(segment) for segment in point_list]
+    # Clipping mask
+    paths = dwg.add(dwg.g(id='path', stroke_width=2,
+                        fill='white', fill_opacity="0", mask="url(#curveMask)"))
 
-    paths.add(dwg.path(d=path_string, stroke=next(trace_colors)))
-    # for point in response:
-    #     draw_point(*log_scale(*point))
+    # Traces mask
+    def plot_path(dataset):
+        log_points = []
+        for pair in dataset:
+            entry = list(log_scale(*pair))
+            log_points.append(entry)
 
+        return bspline_maker.make_curve(log_points)
 
-# #
-# # This area is for troubleshooting, it does the same as above but just prints
-# # the list of points, it doesn't
-# for response in datasets.responses:
-#     path_string = diagnostic_path(response)
-#     d = "M"
-#     point_list = [d+e for e in path_string.split(d) if e]
-#     print('lin point_list: ')
-#     [print(segment) for segment in point_list]
+    for response in datasets.responses:
+        path_string = plot_path(response)
+        d = "M"
+        point_list = [d+e for e in path_string.split(d) if e]
 
-#     # paths.add(dwg.path(d=path_string,stroke=next(trace_colors)))
-#     # for point in response:
-#     #     draw_point(*log_scale(*point))
+        paths.add(dwg.path(d=path_string, stroke=next(trace_colors)))
 
-
-# paths.add(dwg.path(d="M 212.852669 395.714286 C 229.336193,396.602517 253.006439,288.809348 260.480665,224.285714",
-    # stroke="green"))
-
-
-#
-#
-# M 50.000000 50.000000 C 61.182443,49.896373 80.106218,62.472243 80.000000,70.000000
-
-# Take Y values and plug into equation:
-# B(t)_y = ((1-t)^3)*P0_y + 3((1-t)^2)*t*P1_y + 3(1-t)(t^2)P2_y + (t^3)*P3_y
-# B(t)_y = ((1-t)^3)*50 + 3((1-t)^2)*t*49.896373 + 3(1-t)(t^2)*62.472243 + (t^3)*70
-# Used wolframalpha.com to solve for t... t = 0.612255
-
-# Plug t into x side of cubic bezier function to find B(t)_x
-# B(t)_x = ((1-t)^3)*P0_x + 3((1-t)^2)*t*P1_x + 3(1-t)(t^2)P2_x + (t^3)*P3_x
-# B(t)_x = ((1-t)^3)*50 + 3((1-t)^2)*t*61.182443 + 3(1-t)(t^2)*80.106218 + (t^3)*80  where t = .612255
-# Used wolframalpha.com to solve for B(0.612255)_x = 73.101
-
-
-##################################
-#
-#   Keeping B Splines In Bounds
-#
-##################################
-
-'''
-Depending on the range of the plot, parts of the plotted bezier curve may be outside
-the graph perimeter. We need to figure out where the plotted curve intersects with the
-perimter and slice the curve at those points.
-
-'''
-
-test_curve = [[50.000000, 50.000000], [61.182443, 49.896373],
-              [80.106218, 62.472243], [80.000000, 70.000000]]
-
-# Take Y values and plug into equation:
-# B(t)_y = ((1-t)^3)*P0_y + 3((1-t)^2)*t*P1_y + 3(1-t)(t^2)P2_y + (t^3)*P3_y
-# B(t)_y = ((1-t)^3)*50 + 3((1-t)^2)*t*49.896373 + 3(1-t)(t^2)*62.472243 + (t^3)*70
-# Used wolframalpha.com to solve for t... t = 0.612255
-
-# Plug t into x side of cubic bezier function to find B(t)_x
-# B(t)_x = ((1-t)^3)*P0_x + 3((1-t)^2)*t*P1_x + 3(1-t)(t^2)P2_x + (t^3)*P3_x
-# B(t)_x = ((1-t)^3)*50 + 3((1-t)^2)*t*61.182443 + 3(1-t)(t^2)*80.106218 + (t^3)*80  where t = .612255
-# Used wolframalpha.com to solve for B(0.612255)_x = 73.101
-
-
-def find_intersect(y, bez):
-    '''
-    This function finds the intersection point between a horizontal line and a bezier curve.
-
-    Args:
-        y (float) -> the y interesction of the horizontal line
-        bez (list) -> a list of lists containing 4 control
-            points for a cubic bezier curve using the format:
-            [[P0x1 - 2 t + t^2, P0y], [P1x, P1y], [P2x, P2y], [P3x, P3y]]
-
-    Returns:
-        intersect (list) -> the point of intersection: [x, y]
-    --------------------------------------------------------------------
-    '''
-
-    '''
-    The general equation for a bezier curve is:
-    B(t) = ((1-t)^3)*P0 + 3((1-t)^2)*t*P1 + 3(1-t)(t^2)P2 + (t^3)*P3
-
-    When expanded that can be written as:
-    B(t) =
-    P0( -t^3 + 3t^2 - 3t + 1 ) +
-    P1( 3t^3 - 6t^2 + 3t + 0 ) +
-    P2(-3t^3 + 3t^2 -  0 + 0 ) +
-    P3(  t^3 +    0 -  0 + 0 )
-
-    To find the intersection point, we first need to solve to find the value of t
-    where B(t)_y is equal to the y intercept.
-
-    Numpy's roots function can be used to solve to find the value of t. It takes a
-    list cooeficients A,B,C,D as its parameter. To find these we can multiply the
-    y value of each bezier control point through each expanded polynomial and sum
-    the coefficient preceding each element to find A,B,C,D.
-    '''
-    A = -1*bez[0][1] + 3*bez[1][1] + -3*bez[2][1] + 1*bez[3][1]
-    B = 3*bez[0][1] + -6*bez[1][1] + 3*bez[2][1] + 0*bez[3][1]
-    C = -3*bez[0][1] + 3*bez[1][1] + 0*bez[2][1] + 0*bez[3][1]
-    D = 1*bez[0][1] + 0*bez[1][1] + 0*bez[2][1] + 0*bez[3][1]
-
-    '''
-    The fourth element is D-y because we need to find where the roots are zero.
-    This is the quivalent of subtracting the Y offset from both sides:
-    y = ((1-t)^3)*P0 + 3((1-t)^2)*t*P1 + 3(1-t)(t^2)P2 + (t^3)*P3
-    0 = ((1-t)^3)*P0 + 3((1-t)^2)*t*P1 + 3(1-t)(t^2)P2 + (t^3)*P3 - y
-
-    '''
-    print('A,B,C,D:', A, ',', B, ',', C, ',', D)
-
-    coeff = [A, B, C, D-y]
-
-    t_params = np.roots(coeff)
-
-    for t in t_params:
-        if t > 0 and t < 1:
-            print('t :', t)
-    # Plug t into x side of cubic bezier function to find B(t)_x
-            x = (((1-t)**3)*bez[0][0]) + (bez[1][0]*(3*t - 6*t**2 + 3*t**3)
-                                          ) + ((3*t**2 - 3*t**3)*bez[2][0]) + ((t**3)*bez[3][0])
-
-            return (x, y)
-
-
-# print(find_intersect(60,test_curve))
-
-
-def interpolate_points(total_points, bez=test_curve):
-    '''
-    This function plots a number of points along a bezier curve.
-
-    Args:
-        bez (list) -> a list of lists containing 4 control
-            points for a cubic bezier curve using the format:
-            [[P0x1 - 2 t + t^2, P0y], [P1x, P1y], [P2x, P2y], [P3x, P3y]]
-        total_points (int) -> how many points to return
-
-    Returns:
-        b_points (list of lists) -> the point of intersection: [x, y]
-    '''
-
-    # Create a list of points T between 0 and 1 based on the number of total_points
-    t_points = []
-
-    t_step = 1/total_points
-    t_count = 0
-
-    while t_count <= 1:
-        t_points.append(t_count)
-        t_count += t_step
-
-    b_points = []
-
-    # Plug t values into expanded form of bezier curve function.
-    for t in t_points:
-        x = (((1-t)**3)*bez[0][0]) + (bez[1][0]*(3*t - 6*t**2 + 3*t**3)
-                                      ) + ((3*t**2 - 3*t**3)*bez[2][0]) + ((t**3)*bez[3][0])
-        y = (((1-t)**3)*bez[0][1]) + (bez[1][1]*(3*t - 6*t**2 + 3*t**3)
-                                      ) + ((3*t**2 - 3*t**3)*bez[2][1]) + ((t**3)*bez[3][1])
-        b_points.append([x, y])
-
-    return b_points
-
-
-# draw_point(*log_scale(73.101,60.00001))
-dwg.save()
+    dwg.save()
