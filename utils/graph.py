@@ -102,7 +102,25 @@ class Graph:
         represents the order in which they appear.
         '''
         self.draw_background()
-        self.draw_h_lines()
+        hline_list = self.draw_h_lines()
+        vline_list = self.draw_v_lines()
+
+        # Axes and labels
+        # self.add_v_labels(vline_list, graph_label_font)
+
+        self.draw_axis_lable('Frequency in Hz',
+                            self.graph_size[0] + self.graph_offset[0] + 30,
+                            self.graph_size[1] + self.graph_offset[1] + 10,
+                            0,
+                            **graph_label_font)
+
+        # self.add_h_labels(hline_list, graph_label_font)
+
+        self.draw_axis_lable('Amplitude in dB',
+                            self.graph_offset[0] - 90,
+                            self.graph_offset[1] + 5,
+                            0,
+                            **graph_label_font)
 
         # Add trace_paths to clipping mask
         # self.trace_paths = self.dwg.add(self.dwg.g(id='path', stroke_width=2,
@@ -209,82 +227,78 @@ class Graph:
 
         return line_coords
 
-    # def draw_v_lines(
-    #         freq_min=freq_min,
-    #         freq_max=freq_max,
-    #         svg_group=scale_lines,
-    #         g_offset_x=g_offset_x,
-    #         g_offset_y=g_offset_y):
-    #     '''
-    #     This function draws vertical markers on the graph based on the range of frequencies
-    #     plotted. For a bode plot with a logarithmic scale, we're interested in major markers at
-    #     powers of 10 and minor markers at integer multiples of that power of 10 leading up
-    #     to the next marker:
-    #     10^n * 1, 10^n * 2, 10^n * 3 ... 10^n+1 * 1
-    #     Strokes are thicker at powers of 10. The function returns a list of vertical lines
-    #     plotted to help figure out where to put a label.
-    #     '''
+    def draw_v_lines(self):
+        '''
+        This function draws vertical markers on the graph based on the range of frequencies
+        plotted. For a bode plot with a logarithmic scale, we're interested in major markers at
+        powers of 10 and minor markers at integer multiples of that power of 10 leading up
+        to the next marker:
+        10^n * 1, 10^n * 2, 10^n * 3 ... 10^n+1 * 1
+        Strokes are thicker at powers of 10. The function returns a list of vertical lines
+        plotted to help figure out where to put a label.
+        '''
 
-    #     # list of frequencies to mark with vertical lines
-    #     vlines = []
+        # list of frequencies to mark with vertical lines
+        vlines = []
 
-    #     # a list to track the frequencies plotted and the start and end points of the line
-    #     # this is for figuring out where to draw a label
-    #     line_coords = []
+        # a list to track the frequencies plotted and the start and end points of the line
+        # this is for figuring out where to draw a label
+        line_coords = []
 
-    #     # Start with the minimum frequency
-    #     f = freq_min
-    #     while(f <= freq_max):
-    #         # figure out which order of magnitude f is in
-    #         power = log10(f)
-    #         power = floor(power)
-    #         # step is used to increment f
-    #         step = pow(10, power)
-    #         freq = ceil(f/step) * step
-    #         if freq < freq_max:
-    #             line_coords.append([freq, ])
-    #             vlines.append(freq)
-    #         # increment f to the next frequency of interest
-    #         f = f + step
+        # Start with the minimum frequency
+        f = self.freq_range[0]
+        while(f <= self.freq_range[1]):
+            # figure out which order of magnitude f is in
+            power = log10(f)
+            power = floor(power)
+            # step is used to increment f
+            step = pow(10, power)
+            freq = ceil(f/step) * step
+            if freq < self.freq_range[1]:
+                line_coords.append([freq, ])
+                vlines.append(freq)
+            # increment f to the next frequency of interest
+            f = f + step
 
-    #     for i in range(len(vlines)):
-    #         line_start = log_scale(vlines[i], amp_max)
-    #         line_end = log_scale(vlines[i], amp_min)
+        for i in range(len(vlines)):
+            line_start = self.log_scale(vlines[i], self.amp_range[1])
+            line_end = self.log_scale(vlines[i], self.amp_range[0])
 
-    #         line_coords[i].append((line_start, line_end))
+            line_coords[i].append((line_start, line_end))
 
-    #         # use a thicker stroke for powers of 10
-    #         if str(vlines[i]).startswith('10'):
-    #             line = dwg.line(start=line_start, end=line_end, stroke_width=1)
-    #         else:
-    #             line = dwg.line(start=line_start, end=line_end, stroke_width=.25)
-    #         # draw the line
-    #         svg_group.add(line)
+            # use a thicker stroke for powers of 10
+            if str(vlines[i]).startswith('10'):
+                line = self.dwg.line(start=line_start, end=line_end, stroke_width=1)
+            else:
+                line = self.dwg.line(start=line_start, end=line_end, stroke_width=.25)
+            # draw the line
+            self.scale_lines.add(line)
 
-    #     return line_coords
+        return line_coords
 
-    # def draw_lable(
-    #         text,
-    #         x,
-    #         y,
-    #         rotate,
-    #         svg_group=line_labels,
-    #         font_family='',
-    #         font_size='',
-    #         font_color=''):
+    def draw_lable(
+            self,
+            text,
+            x,
+            y,
+            rotate,
+            # svg_group=line_labels,
+            font_family='',
+            font_size='',
+            font_color=''):
 
-    #     msg = dwg.text(
-    #         text,
-    #         insert=(x, y),
-    #         font_family=font_family,
-    #         font_size=font_size,
-    #         fill=font_color)
+        msg = self.dwg.text(
+            text,
+            insert=(x, y),
+            font_family=font_family,
+            font_size=font_size,
+            fill=font_color)
 
-    #     msg.rotate(rotate, (x, y))
+        msg.rotate(rotate, (x, y))
 
-    #     svg_group.add(msg)
+        self.line_labels.add(msg)
 
-    # def add_v_labels(line_list, label_font):
+    # def add_v_labels(self, line_list, label_font = graph_label_font['font_family']):
     #     '''
     #     This function draws labels for vertical markers.
     #     '''
@@ -294,10 +308,10 @@ class Graph:
     #         y_offset = 10
     #         rotation = 45
     #         if str(text).startswith('1') or str(text).startswith('5'):
-    #             draw_lable(text, end_point[0], end_point[1] +
+    #             self.draw_lable(text, end_point[0], end_point[1] +
     #                     y_offset, rotation, **label_font)
 
-    # def add_h_labels(line_list, label_font):
+    # def add_h_labels(self, line_list, label_font = graph_label_font['font_family']):
     #     '''
     #     This function draws labels for horizontal markers.
     #     '''
@@ -308,26 +322,26 @@ class Graph:
     #         y_offset = 4
     #         rotation = 0
     #         if text % 5 == 0:
-    #             draw_lable(
+    #             self.draw_lable(
     #                 text, start_point[0]+x_offset, start_point[1]+y_offset, rotation, **label_font)
 
-    # def draw_axis_lable(
-    #         text,
-    #         x,
-    #         y,
-    #         rotate,
-    #         svg_group=line_labels,
-    #         font_family='',
-    #         font_size='',
-    #         font_color=''):
+    def draw_axis_lable(
+            self,
+            text,
+            x,
+            y,
+            rotate,
+            font_family='',
+            font_size='',
+            font_color=''):
 
-    #     msg = dwg.text(
-    #         text,
-    #         insert=(x, y),
-    #         font_family=font_family,
-    #         font_size=font_size,
-    #         fill=font_color)
+        msg = self.dwg.text(
+            text,
+            insert=(x, y),
+            font_family=font_family,
+            font_size=font_size,
+            fill=font_color)
 
-    #     msg.rotate(rotate, (x, y))
+        msg.rotate(rotate, (x, y))
 
-    #     svg_group.add(msg)
+        self.line_labels.add(msg)

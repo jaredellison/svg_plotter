@@ -52,19 +52,6 @@ class TestGraphClass(unittest.TestCase):
         self.assertTupleEqual(g.log_scale(20000, 60), (700, 300))
         self.assertTupleEqual(g.log_scale(20000, 95), (700, 0))
 
-    def test_log_scale(self):
-        g = Graph(
-            total_size=(1000, 600),
-            graph_size=(700, 300),
-            graph_offset=(0, 0),
-            freq_range=(20, 20000),
-            amp_range=(60, 95),
-        )
-        self.assertTupleEqual(g.log_scale(20, 60), (0, 300))
-        self.assertTupleEqual(g.log_scale(20, 95), (0, 0))
-        self.assertTupleEqual(g.log_scale(20000, 60), (700, 300))
-        self.assertTupleEqual(g.log_scale(20000, 95), (700, 0))
-
     def test_file_creation(self):
         if 'test_output.svg' in os.listdir('svg_output'):
             os.unlink('svg_output/test_output.svg')
