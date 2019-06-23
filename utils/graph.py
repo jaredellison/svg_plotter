@@ -80,21 +80,14 @@ class Graph:
             # Set debug false for production!
             debug=True
         )
+
         # Create svg drawing groups
         self.background = self.dwg.add(self.dwg.g(id='background'))
-        self.trace_paths = self.dwg.add(self.dwg.g(id='trace_paths'))
         self.scale_lines = self.dwg.add(self.dwg.g(
             id='scale_lines', fill='grey', stroke='grey'))
         self.line_labels = self.dwg.add(self.dwg.g(id='labels', fill='black'))
         self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
 
-
-        # # Create Clipping mask
-        # self.clipping_mask.add(self.dwg.rect(
-        #     insert=(self.graph_offset[0], self.graph_offset[1]),
-        #     size=(self.graph_size[0], self.graph_size[1]),
-        #     fill="white")
-        # )
 
     def render(self):
         '''
@@ -106,25 +99,34 @@ class Graph:
         vline_list = self.draw_v_lines()
 
         # Axes and labels
-        # self.add_v_labels(vline_list, graph_label_font)
+        self.draw_v_labels(vline_list, graph_label_font)
 
         self.draw_axis_lable('Frequency in Hz',
-                            self.graph_size[0] + self.graph_offset[0] + 30,
-                            self.graph_size[1] + self.graph_offset[1] + 10,
-                            0,
-                            **graph_label_font)
+                             self.graph_size[0] + self.graph_offset[0] + 30,
+                             self.graph_size[1] + self.graph_offset[1] + 10,
+                             0,
+                             **graph_label_font)
 
-        # self.add_h_labels(hline_list, graph_label_font)
+        self.draw_h_labels(hline_list, graph_label_font)
 
         self.draw_axis_lable('Amplitude in dB',
-                            self.graph_offset[0] - 90,
-                            self.graph_offset[1] + 5,
-                            0,
-                            **graph_label_font)
+                             self.graph_offset[0] - 90,
+                             self.graph_offset[1] + 5,
+                             0,
+                             **graph_label_font)
+
+        # Create Clipping mask
+        self.clipping_mask.add(self.dwg.rect(
+            insert=(self.graph_offset[0], self.graph_offset[1]),
+            size=(self.graph_size[0], self.graph_size[1]),
+            fill="white")
+        )
 
         # Add trace_paths to clipping mask
-        # self.trace_paths = self.dwg.add(self.dwg.g(id='path', stroke_width=2,
-        #                     fill='white', fill_opacity="0", mask="url(#curveMask)"))
+        self.trace_paths = self.dwg.add(self.dwg.g(id='path', stroke_width=2,
+                            fill='white', fill_opacity="0", mask="url(#clipping_mask)"))
+
+        self.draw_traces()
 
     def save(self):
         self.dwg.save()
@@ -192,11 +194,11 @@ class Graph:
         if (x <= self.graph_offset[0]
             or x >= self.graph_offset[0] + self.graph_size[0]
             or y <= self.graph_offset[1]
-            or y >= self.graph_offset[1] + self.graph_size[1]):
+                or y >= self.graph_offset[1] + self.graph_size[1]):
             return
 
         point = self.dwg.circle(center=(x*px, y*px), r='2px',
-                        fill=color, stroke=color, stroke_width=2)
+                                fill=color, stroke=color, stroke_width=2)
         self.background.add(point)
 
     def draw_h_lines(self):
@@ -216,11 +218,14 @@ class Graph:
 
             # Change the stroke width depending if it's a multiple of 10, 5 or 1
             if a % 10 == 0:
-                line = self.dwg.line(start=line_start, end=line_end, stroke_width=1)
+                line = self.dwg.line(
+                    start=line_start, end=line_end, stroke_width=1)
             elif a % 5 == 0:
-                line = self.dwg.line(start=line_start, end=line_end, stroke_width=.5)
+                line = self.dwg.line(
+                    start=line_start, end=line_end, stroke_width=.5)
             else:
-                line = self.dwg.line(start=line_start, end=line_end, stroke_width=.25)
+                line = self.dwg.line(
+                    start=line_start, end=line_end, stroke_width=.25)
 
             # Draw the line
             self.scale_lines.add(line)
@@ -268,9 +273,11 @@ class Graph:
 
             # use a thicker stroke for powers of 10
             if str(vlines[i]).startswith('10'):
-                line = self.dwg.line(start=line_start, end=line_end, stroke_width=1)
+                line = self.dwg.line(
+                    start=line_start, end=line_end, stroke_width=1)
             else:
-                line = self.dwg.line(start=line_start, end=line_end, stroke_width=.25)
+                line = self.dwg.line(
+                    start=line_start, end=line_end, stroke_width=.25)
             # draw the line
             self.scale_lines.add(line)
 
@@ -298,32 +305,40 @@ class Graph:
 
         self.line_labels.add(msg)
 
-    # def add_v_labels(self, line_list, label_font = graph_label_font['font_family']):
-    #     '''
-    #     This function draws labels for vertical markers.
-    #     '''
-    #     for item in line_list:
-    #         text = int(item[0])
-    #         end_point = item[1][1]
-    #         y_offset = 10
-    #         rotation = 45
-    #         if str(text).startswith('1') or str(text).startswith('5'):
-    #             self.draw_lable(text, end_point[0], end_point[1] +
-    #                     y_offset, rotation, **label_font)
+    def draw_v_labels(self, line_list, label_font):
+        '''
+        Draw labels for vertical markers
+        '''
+        for item in line_list:
+            text = int(item[0])
+            end_point = item[1][1]
+            y_offset = 10
+            rotation = 45
+            if str(text).startswith('1') or str(text).startswith('5'):
+                self.draw_lable(
+                    text,
+                    end_point[0],
+                    end_point[1] + y_offset,
+                    rotation,
+                    **label_font)
 
-    # def add_h_labels(self, line_list, label_font = graph_label_font['font_family']):
-    #     '''
-    #     This function draws labels for horizontal markers.
-    #     '''
-    #     for item in line_list:
-    #         text = int(item[0])
-    #         start_point = item[1][0]
-    #         x_offset = -20
-    #         y_offset = 4
-    #         rotation = 0
-    #         if text % 5 == 0:
-    #             self.draw_lable(
-    #                 text, start_point[0]+x_offset, start_point[1]+y_offset, rotation, **label_font)
+    def draw_h_labels(self, line_list, label_font):
+        '''
+        Draw labels for horizontal markers
+        '''
+        for item in line_list:
+            text = int(item[0])
+            start_point = item[1][0]
+            x_offset = -20
+            y_offset = 4
+            rotation = 0
+            if text % 5 == 0:
+                self.draw_lable(
+                    text,
+                    start_point[0] + x_offset,
+                    start_point[1]+y_offset,
+                    rotation,
+                    **label_font)
 
     def draw_axis_lable(
             self,
@@ -345,3 +360,9 @@ class Graph:
         msg.rotate(rotate, (x, y))
 
         self.line_labels.add(msg)
+
+    def draw_traces(self):
+        for trace in self.traces:
+            log_points = [list(self.log_scale(*pair)) for pair in trace["points"]]
+            path_string = bspline.make_curve(log_points)
+            self.trace_paths.add(self.dwg.path(d=path_string, stroke='blue'))
