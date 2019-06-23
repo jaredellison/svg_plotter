@@ -88,14 +88,13 @@ class Graph:
         self.line_labels = self.dwg.add(self.dwg.g(id='labels', fill='black'))
         self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
 
+        self.draw_background()
+
     def render(self):
         '''
         Create output drawing. Note that the order drawing methods are called in
         represents the order in which they appear.
         '''
-        #
-        self.draw_background()
-
         # Create Clipping mask
         self.clipping_mask.add(self.dwg.rect(
             insert=(self.graph_offset[0], self.graph_offset[1]),
@@ -162,27 +161,22 @@ class Graph:
             )
         )
 
-    # def draw_point(
-    #         x,
-    #         y,
-    #         svg_group=trace,
-    #         x_start=g_offset_x,
-    #         x_end=(g_offset_x+g_size_x),
-    #         y_start=g_offset_y,
-    #         y_end=(g_offset_y+g_size_y),
-    #         color=''):
-    #     '''
-    #     This function draws a point on the graph. The inputs are in x and y, to plot a
-    #     point based on frequency and amplitude, use the log scale function to convert it.
-    #     '''
+    def draw_point(self, x, y, color=''):
+        '''
+        This function draws a point on the graph. The inputs are in x and y, to plot a
+        point based on frequency and amplitude, use the log_scale method to convert it.
+        '''
 
-    #     # Skip points that are out of range
-    #     if x <= x_start or x >= x_end or y <= y_start or y >= y_end:
-    #         return
+        # Skip points that are out of range
+        if (x <= self.graph_offset[0]
+            or x >= self.graph_offset[0] + self.graph_size[0]
+            or y <= self.graph_offset[1]
+            or y >= self.graph_offset[1] + self.graph_size[1]):
+            return
 
-    #     dot = dwg.circle(center=(x*px, y*px), r='2px',
-    #                     fill=color, stroke=color, stroke_width=2)
-    #     svg_group.add(dot)
+        point = self.dwg.circle(center=(x*px, y*px), r='2px',
+                        fill=color, stroke=color, stroke_width=2)
+        self.background.add(point)
 
     # def draw_h_lines(
     #         amp_min=amp_min,

@@ -75,8 +75,14 @@ class TestGraphClass(unittest.TestCase):
 
     def test_render(self):
         if 'example_output.svg' in os.listdir('svg_output'):
-            os.unlink('example_output.svg')
+            os.unlink('svg_output/example_output.svg')
         g = Graph(file_name='svg_output/example_output.svg')
+        # Render some points
+        g.draw_point(120,10);
+        g.draw_point(130,20);
+        g.draw_point(140,30);
+        g.draw_point(150,40);
+        g.draw_point(160,50);
         g.render()
 
 
