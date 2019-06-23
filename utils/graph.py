@@ -88,24 +88,27 @@ class Graph:
         self.line_labels = self.dwg.add(self.dwg.g(id='labels', fill='black'))
         self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
 
-        self.draw_background()
+
+        # # Create Clipping mask
+        # self.clipping_mask.add(self.dwg.rect(
+        #     insert=(self.graph_offset[0], self.graph_offset[1]),
+        #     size=(self.graph_size[0], self.graph_size[1]),
+        #     fill="white")
+        # )
 
     def render(self):
         '''
         Create output drawing. Note that the order drawing methods are called in
         represents the order in which they appear.
         '''
-        # Create Clipping mask
-        self.clipping_mask.add(self.dwg.rect(
-            insert=(self.graph_offset[0], self.graph_offset[1]),
-            size=(self.graph_size[0], self.graph_size[1]),
-            fill="white")
-        )
+        self.draw_background()
+        self.draw_h_lines()
 
         # Add trace_paths to clipping mask
         # self.trace_paths = self.dwg.add(self.dwg.g(id='path', stroke_width=2,
         #                     fill='white', fill_opacity="0", mask="url(#curveMask)"))
 
+    def save(self):
         self.dwg.save()
 
     ########################################
@@ -178,38 +181,33 @@ class Graph:
                         fill=color, stroke=color, stroke_width=2)
         self.background.add(point)
 
-    # def draw_h_lines(
-    #         amp_min=amp_min,
-    #         amp_max=amp_max,
-    #         svg_group=scale_lines,
-    #         g_offset_x=g_offset_x,
-    #         g_offset_y=g_offset_y):
-    #     '''
-    #     This function draws horizontal markers on the graph based on the range of amplitudes
-    #     plotted. Stroke thickness depends on multiples of 10, 5 and 1. The function returns
-    #     a list of horizontal lines plotted to help figure out where to put a label.
-    #     '''
+    def draw_h_lines(self):
+        '''
+        This function draws horizontal markers on the graph based on the range of amplitudes
+        plotted. Stroke thickness depends on multiples of 10, 5 and 1. The function returns
+        a list of horizontal lines plotted to help figure out where to put a label.
+        '''
 
-    #     line_coords = []
-    #     for a in range(amp_min, amp_max):
-    #         line_start = log_scale(freq_min, a)
-    #         line_end = log_scale(freq_max, a)
+        line_coords = []
+        for a in range(self.amp_range[0], self.amp_range[1]):
+            line_start = self.log_scale(self.freq_range[0], a)
+            line_end = self.log_scale(self.freq_range[1], a)
 
-    #         # Add to the list of lines
-    #         line_coords.append([a, (line_start, line_end)])
+            # Add to the list of lines
+            line_coords.append([a, (line_start, line_end)])
 
-    #         # Change the stroke width depending if it's a multiple of 10, 5 or 1
-    #         if a % 10 == 0:
-    #             line = dwg.line(start=line_start, end=line_end, stroke_width=1)
-    #         elif a % 5 == 0:
-    #             line = dwg.line(start=line_start, end=line_end, stroke_width=.5)
-    #         else:
-    #             line = dwg.line(start=line_start, end=line_end, stroke_width=.25)
+            # Change the stroke width depending if it's a multiple of 10, 5 or 1
+            if a % 10 == 0:
+                line = self.dwg.line(start=line_start, end=line_end, stroke_width=1)
+            elif a % 5 == 0:
+                line = self.dwg.line(start=line_start, end=line_end, stroke_width=.5)
+            else:
+                line = self.dwg.line(start=line_start, end=line_end, stroke_width=.25)
 
-    #         # Draw the line
-    #         svg_group.add(line)
+            # Draw the line
+            self.scale_lines.add(line)
 
-    #     return line_coords
+        return line_coords
 
     # def draw_v_lines(
     #         freq_min=freq_min,
