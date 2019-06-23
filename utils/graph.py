@@ -22,30 +22,20 @@ from math import log10, floor, pow, ceil
 ########################################
 #  Default Parameters
 
-# total size of the generated svg including space for a legend (x, y) pair
+# total size of the generated svg including space for a legend: (x, y) pair
 total_size = (1000, 600)
-# tot_size_x = 1000
-# tot_size_y = 600
 
-# size of graph (x, y) pair
+# size of graph: (x, y) pair
 graph_size = (700, 300)
-# g_size_x = 700
-# g_size_y = 300
 
-# offset from left side and top of image (x, y) pair
+# offset from left side and top of image: (x, y) pair
 graph_offset = (120, 10)
-# g_offset_x = 120
-# g_offset_y = 10
 
-# the frequency range of the graph in Hz (x, y) pair
+# the frequency range of the graph in Hz: (a, b) range
 freq_range = (20, 20000)
-# freq_min = 20
-# freq_max = 20000
 
-# amplitude range of the graph in dB (x, y) pair
+# amplitude range of the graph in dB: (a, b) range
 amp_range = (60, 95)
-# amp_min = 60
-# amp_max = 95
 
 # graph label font
 graph_label_font = {
@@ -93,7 +83,8 @@ class Graph:
         # Create svg drawing groups
         self.background = self.dwg.add(self.dwg.g(id='background'))
         self.trace_paths = self.dwg.add(self.dwg.g(id='trace_paths'))
-        self.scale_lines = self.dwg.add(self.dwg.g(id='scale_lines', fill='grey', stroke='grey'))
+        self.scale_lines = self.dwg.add(self.dwg.g(
+            id='scale_lines', fill='grey', stroke='grey'))
         self.line_labels = self.dwg.add(self.dwg.g(id='labels', fill='black'))
         self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
 
@@ -117,7 +108,6 @@ class Graph:
         #                     fill='white', fill_opacity="0", mask="url(#curveMask)"))
 
         self.dwg.save()
-
 
     ########################################
     #  Data Oriented Methods
@@ -169,7 +159,7 @@ class Graph:
                 fill=background_fill,
                 stroke=background_stroke,
                 stroke_width=background_stroke_width
-                )
+            )
         )
 
     # def draw_point(
