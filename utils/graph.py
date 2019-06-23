@@ -66,8 +66,12 @@ class Graph:
         graph_size=graph_size,
         graph_offset=graph_offset,
         freq_range=freq_range,
-        amp_range=amp_range
+        amp_range=amp_range,
+        file_name="./default_output.svg"
     ):
+        ####################
+        #  Graph attributes
+
         self.total_size = total_size
         self.graph_size = graph_size
         self.graph_offset = graph_offset
@@ -75,24 +79,46 @@ class Graph:
         self.amp_range = amp_range
         self.traces = []
 
-    def render(self, output_path):
-        pass
+        ####################
+        #  SVG Attributes
+
+        self.file_name = file_name
+        # Create drawing object to render to
+        self.dwg = svgwrite.Drawing(
+            filename=self.file_name,
+            size=(self.total_size[0] * px, self.total_size[1] * px),
+            # Set debug false for production!
+            debug=True
+        )
+        # Create svg drawing groups
+        self.background = self.dwg.add(self.dwg.g(id='background'))
+        self.trace_paths = self.dwg.add(self.dwg.g(id='trace_paths'))
+        self.scale_lines = self.dwg.add(self.dwg.g(id='scale_lines', fill='grey', stroke='grey'))
+        self.line_labels = self.dwg.add(self.dwg.g(id='labels', fill='black'))
+        self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
+
+    def render(self):
+        # Create Clipping mask
+        self.clipping_mask.add(self.dwg.rect(
+            insert=(self.graph_offset[0], self.graph_offset[1]),
+            size=(self.graph_size[0], self.graph_size[1]),
+            fill="white")
+        )
+
+        # Add trace_paths to clipping mask
+        # self.trace_paths = self.dwg.add(self.dwg.g(id='path', stroke_width=2,
+        #                     fill='white', fill_opacity="0", mask="url(#curveMask)"))
+
+        self.dwg.save()
+
+
+    ########################################
+    #  Data Oriented Methods
 
     def add_trace(self, trace):
         self.traces.append(trace)
 
-    ########################################
-    #  Utility Methods
-
     def log_scale(self, f, a):
-        # f_start=freq_min,
-        # f_end=freq_max,
-        # x_start=g_offset_x,
-        # x_end=(g_offset_x+g_size_x),
-        # a_min=amp_min,
-        # a_max=amp_max,
-        # y_start=g_offset_y,
-        # y_end=(g_size_y+g_offset_y)
         '''
         This function takes a frequency (Hz) and amplitude (dB) and outputs an
          x,y coordinate pair as a tuple.
@@ -101,6 +127,7 @@ class Graph:
         # Scale frequency input to a fraction of the specified spectrum
         x = ((log10(f)-log10(self.freq_range[0])) /
              (log10(self.freq_range[1]) - log10(self.freq_range[0])))
+
         # Apply that fraction to the width of the graph
         x_end = self.graph_offset[0] + self.graph_size[0]
         x_start = self.graph_offset[0]
@@ -117,6 +144,27 @@ class Graph:
 
     ########################################
     #  Render Methods
+
+    # def draw_background(
+    #         start_x=g_offset_x,
+    #         start_y=g_offset_y,
+    #         x_size=g_size_x,
+    #         y_size=g_size_y):
+    #     '''
+    #     This function draws a rectangle behind the plotting area.
+    #     Call this function first so it's in the background.
+    #     '''
+
+    #     background_fill = '#fcfcfc'
+    #     background_stroke = '#000000'
+    #     background_stroke_width = 1
+
+    #     background.add(dwg.rect(
+    #         insert=(start_x*px, start_y*px),
+    #         size=(x_size*px, y_size*px),
+    #         fill=background_fill,
+    #         stroke=background_stroke,
+    #         stroke_width=background_stroke_width))
 
     # def draw_point(
     #         x,
@@ -139,27 +187,6 @@ class Graph:
     #     dot = dwg.circle(center=(x*px, y*px), r='2px',
     #                     fill=color, stroke=color, stroke_width=2)
     #     svg_group.add(dot)
-
-    # def draw_background(
-    #         start_x=g_offset_x,
-    #         start_y=g_offset_y,
-    #         x_size=g_size_x,
-    #         y_size=g_size_y):
-    #     '''
-    #     This function draws a rectangle behind the plotting area.
-    #     Call this function first so it's in the background.
-    #     '''
-
-    #     background_fill = '#fcfcfc'
-    #     background_stroke = '#000000'
-    #     background_stroke_width = 1
-
-    #     shapes.add(dwg.rect(
-    #         insert=(start_x*px, start_y*px),
-    #         size=(x_size*px, y_size*px),
-    #         fill=background_fill,
-    #         stroke=background_stroke,
-    #         stroke_width=background_stroke_width))
 
     # def draw_h_lines(
     #         amp_min=amp_min,
