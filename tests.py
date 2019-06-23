@@ -2,6 +2,7 @@ import unittest
 from utils.graph import Graph
 import os
 
+
 class TestGraphClass(unittest.TestCase):
     def test_custom_attributes(self):
         g = Graph(
@@ -34,9 +35,9 @@ class TestGraphClass(unittest.TestCase):
 
     def test_add_trace(self):
         g = Graph()
-        g.add_trace([(0,0), (1,1)]);
-        self.assertTupleEqual(g.traces[0][0], (0,0))
-        self.assertTupleEqual(g.traces[0][1], (1,1))
+        g.add_trace([(0, 0), (1, 1)])
+        self.assertTupleEqual(g.traces[0][0], (0, 0))
+        self.assertTupleEqual(g.traces[0][1], (1, 1))
 
     def test_log_scale(self):
         g = Graph(
@@ -46,10 +47,10 @@ class TestGraphClass(unittest.TestCase):
             freq_range=(20, 20000),
             amp_range=(60, 95),
         )
-        self.assertTupleEqual(g.log_scale(20,60), (0, 300))
-        self.assertTupleEqual(g.log_scale(20,95), (0, 0))
-        self.assertTupleEqual(g.log_scale(20000,60), (700, 300))
-        self.assertTupleEqual(g.log_scale(20000,95), (700, 0))
+        self.assertTupleEqual(g.log_scale(20, 60), (0, 300))
+        self.assertTupleEqual(g.log_scale(20, 95), (0, 0))
+        self.assertTupleEqual(g.log_scale(20000, 60), (700, 300))
+        self.assertTupleEqual(g.log_scale(20000, 95), (700, 0))
 
     def test_log_scale(self):
         g = Graph(
@@ -59,18 +60,25 @@ class TestGraphClass(unittest.TestCase):
             freq_range=(20, 20000),
             amp_range=(60, 95),
         )
-        self.assertTupleEqual(g.log_scale(20,60), (0, 300))
-        self.assertTupleEqual(g.log_scale(20,95), (0, 0))
-        self.assertTupleEqual(g.log_scale(20000,60), (700, 300))
-        self.assertTupleEqual(g.log_scale(20000,95), (700, 0))
+        self.assertTupleEqual(g.log_scale(20, 60), (0, 300))
+        self.assertTupleEqual(g.log_scale(20, 95), (0, 0))
+        self.assertTupleEqual(g.log_scale(20000, 60), (700, 300))
+        self.assertTupleEqual(g.log_scale(20000, 95), (700, 0))
 
     def test_file_creation(self):
-        if 'test_output.svg' in os.listdir():
-            os.unlink('test_output.svg')
-        g = Graph(file_name='test_output.svg')
+        if 'test_output.svg' in os.listdir('svg_output'):
+            os.unlink('svg_output/test_output.svg')
+        g = Graph(file_name='svg_output/test_output.svg')
         g.render()
-        self.assertTrue('test_output.svg' in os.listdir())
-        os.unlink('test_output.svg')
+        self.assertTrue('test_output.svg' in os.listdir('svg_output'))
+        os.unlink('svg_output/test_output.svg')
+
+    def test_render(self):
+        if 'example_output.svg' in os.listdir('svg_output'):
+            os.unlink('example_output.svg')
+        g = Graph(file_name='svg_output/example_output.svg')
+        g.render()
+
 
 if __name__ == '__main__':
     unittest.main()
