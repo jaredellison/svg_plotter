@@ -98,6 +98,13 @@ class Graph:
         self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
 
     def render(self):
+        '''
+        Create output drawing. Note that the order drawing methods are called in
+        represents the order in which they appear.
+        '''
+        #
+        self.draw_background()
+
         # Create Clipping mask
         self.clipping_mask.add(self.dwg.rect(
             insert=(self.graph_offset[0], self.graph_offset[1]),
@@ -145,26 +152,25 @@ class Graph:
     ########################################
     #  Render Methods
 
-    # def draw_background(
-    #         start_x=g_offset_x,
-    #         start_y=g_offset_y,
-    #         x_size=g_size_x,
-    #         y_size=g_size_y):
-    #     '''
-    #     This function draws a rectangle behind the plotting area.
-    #     Call this function first so it's in the background.
-    #     '''
+    def draw_background(self):
+        '''
+        This function draws a rectangle behind the plotting area.
+        Call this function first so it's in the back.
+        '''
 
-    #     background_fill = '#fcfcfc'
-    #     background_stroke = '#000000'
-    #     background_stroke_width = 1
+        background_fill = '#fcfcfc'
+        background_stroke = '#000000'
+        background_stroke_width = 1
 
-    #     background.add(dwg.rect(
-    #         insert=(start_x*px, start_y*px),
-    #         size=(x_size*px, y_size*px),
-    #         fill=background_fill,
-    #         stroke=background_stroke,
-    #         stroke_width=background_stroke_width))
+        self.background.add(
+            self.dwg.rect(
+                insert=(self.graph_offset[0] * px, self.graph_offset[1] * px),
+                size=(self.graph_size[0] * px, self.graph_size[1] * px),
+                fill=background_fill,
+                stroke=background_stroke,
+                stroke_width=background_stroke_width
+                )
+        )
 
     # def draw_point(
     #         x,
