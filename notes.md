@@ -1,26 +1,26 @@
 # Notes
 
-[ ] Read through existing codebase.
-  [ ] Diagram code
+[x] Read through existing codebase.
+  [x] Diagram code
 
-[ ] Split into modules
-  [ ] Research conventions
+[x] Split into modules
+  [x] Research conventions
 
-[ ] Sketch out OOP model (graph and traces are objects)
+[x] Sketch out OOP model (graph and traces are objects)
 
 ## Additional
 [ ] Refactor README.md to include usage notes from source
 
 ## Refactoring ideas
-[ ] Factor out color functions into separate module
+[x] Factor out color functions into separate module
   - angle_to_hex_triplet
   - get_trace_color
 
 [x] Put all config variables in one place
 
-[ ] Create method draw_trace from plot_path
+[x] Create method draw_traces from plot_path
 
-[ ] Should x,y pairs be tuples?
+[x] Should x,y pairs be tuples?
   - sgv size, graph size, graph offset
 
 [ ] Decouple draw_h_lines and draw_v_lines from functions to figure out lable positions
