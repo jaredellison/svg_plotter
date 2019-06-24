@@ -85,10 +85,11 @@ class Graph:
         self.background = self.dwg.add(self.dwg.g(id='background'))
         self.scale_lines = self.dwg.add(self.dwg.g(
             id='scale_lines', fill='grey', stroke='grey'))
-        self.line_labels = self.dwg.add(self.dwg.g(id='line_labels', fill='black'))
-        self.trace_labels = self.dwg.add(self.dwg.g(id='trace_labels', fill='black'))
+        self.line_labels = self.dwg.add(
+            self.dwg.g(id='line_labels', fill='black'))
+        self.trace_labels = self.dwg.add(
+            self.dwg.g(id='trace_labels', fill='black'))
         self.clipping_mask = self.dwg.add(self.dwg.mask(id='clipping_mask'))
-
 
     def render(self):
         '''
@@ -125,7 +126,7 @@ class Graph:
 
         # Add trace_paths to clipping mask
         self.trace_paths = self.dwg.add(self.dwg.g(id='path', stroke_width=2,
-                            fill='white', fill_opacity="0", mask="url(#clipping_mask)"))
+                                                   fill='white', fill_opacity="0", mask="url(#clipping_mask)"))
 
         self.draw_traces()
 
@@ -368,22 +369,24 @@ class Graph:
 
         for trace in self.traces:
             color = next(color_generator)
-            log_points = [list(self.log_scale(*pair)) for pair in trace["points"]]
+            log_points = [list(self.log_scale(*pair))
+                          for pair in trace["points"]]
             path_string = bspline.make_curve(log_points)
             self.trace_paths.add(self.dwg.path(d=path_string, stroke=color))
-            self.draw_trace_label(trace['name'], color, label_start_x, label_start_y, 0,**graph_label_font)
+            self.draw_trace_label(
+                trace['name'], color, label_start_x, label_start_y, 0, **graph_label_font)
             label_start_y += 20
 
     def draw_trace_label(
-        self,
-        text,
-        trace_color,
-        x,
-        y,
-        rotate,
-        font_family='',
-        font_size='',
-        font_color=''):
+            self,
+            text,
+            trace_color,
+            x,
+            y,
+            rotate,
+            font_family='',
+            font_size='',
+            font_color=''):
 
         msg = self.dwg.text(
             text,
@@ -392,7 +395,8 @@ class Graph:
             font_size=font_size,
             fill=font_color)
 
-        self.trace_labels.add(self.dwg.path(d=f'M {x} {y - 4.5} L {x + 16} {y - 4.5} z', stroke_width=3, stroke=trace_color))
+        self.trace_labels.add(self.dwg.path(
+            d=f'M {x} {y - 4.5} L {x + 16} {y - 4.5} z', stroke_width=3, stroke=trace_color))
 
         msg.rotate(rotate, (x, y))
 

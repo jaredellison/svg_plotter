@@ -22,7 +22,7 @@ import os
 
 if __name__ == "__main__":
     #  Initialize graph
-    g = Graph(amp_range=(75,105),file_name='svg_output/data_plot.svg')
+    g = Graph(amp_range=(75, 105), file_name='svg_output/data_plot.svg')
 
     source_dir = './data'
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         # Igore hidden files
         if (path.startswith('.')):
             continue
-        # Extract
+        # Extract data
         data = get_data(os.path.join(source_dir, path))
         g.add_trace(data)
 
