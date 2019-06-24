@@ -8,4 +8,3 @@ node_modules
 # Project Specfic
 svg_output/output_plot.svg
 svg_output/example_output.svg
-data/
