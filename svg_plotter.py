@@ -13,12 +13,8 @@
 # pip install -r requirements.txt
 
 from utils.graph import Graph
-
-# project specific modules
-import datasets
-
-# list of colors to be applied to traces
-color_list = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
+from utils.extract import get_data
+import os
 
 ############################################################
 #
@@ -26,9 +22,17 @@ color_list = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
 
 if __name__ == "__main__":
     #  Initialize graph
-    g = Graph(file_name='svg_output/output_plot.svg')
+    g = Graph(amp_range=(75, 105), freq_range=(20, 22000), file_name='svg_output/data_plot.svg')
 
-    g.add_trace({"points": datasets.responses[0], "name": "test"})
+    source_dir = './data'
+
+    for path in os.listdir(source_dir):
+        # Igore hidden files
+        if (path.startswith('.')):
+            continue
+        # Extract data
+        data = get_data(os.path.join(source_dir, path))
+        g.add_trace(data)
 
     g.render()
     g.save()

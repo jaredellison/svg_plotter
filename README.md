@@ -1,6 +1,8 @@
 # svg_plotter
 
-Drawing frequency response bode plots from Room EQ Wizard data in SVG with Python.
+> Drawing frequency response bode plots from Room EQ Wizard data in SVG with Python.
+
+![example-illustration](documentation/example-illustration.png)
 
 This script takes information exported from Room EQ Wizard measurements and draws a graph in an SVG file with a smooth curve for each data set and labels for the frequency and amplitude axes.
 
@@ -10,7 +12,7 @@ I love making and recording music. One question that comes up often in the recor
 
 Manufacturers supply frequency response plots the datasheets that come with new microphones but it isn't so easy to compare the frequency response of different microphones from different manufacturers. The scale of these plots is often different and can be skewed to make a microphone appear to have a flatter response. When comparing many microphones it would be helpful to view the frequency response of each mic all in the same graph with the same scale.
 
-The free audio test software Room EQ Wizard makes it easier than ever to make frequency response measurements and compare measurements but the only option for sharing these measurements is to export a raster image of the plot. 
+The free audio test software Room EQ Wizard makes it easier than ever to make frequency response measurements and compare measurements but the only option for sharing these measurements is to export a raster image of the plot.
 
 Room EQ Wizard does allow exporting a list of data points and this list can be used to create an SVG file that can be embedded on the web and styled with CSS.
 
@@ -26,11 +28,11 @@ This project is very much a work in progress. Work to do includes finding a way 
 
 * [Room EQ Wizard](https://www.roomeqwizard.com) - Free Audio Test software to make measurements and export data to plot
 * [svgwrite](https://pypi.org/project/svgwrite/) - SVG Module for Python
-* [numpy](https://http://www.numpy.org/) - For matrix objects for making smooth spline curves
+* [numpy](http://www.numpy.org/) - For matrix objects for making smooth spline curves
 
 ## Authors
 
-* **Jared Ellison** - *Mixing 0s, 1s and everything in between for fun and profit* - [jaredellison.net](http://jaredellison.net)
+* **Jared Ellison** - [jaredellison.net](http://jaredellison.net)
 
 ## Acknowledgments
 
