@@ -1,3 +1,11 @@
+#!/usr/bin/python3
+# coding=utf-8
+#
+# Author:  Jared Ellison
+# Site:  jaredellison.net
+# Purpose: Generate an evenly distributed collection of colors
+# Created: 06.23.2019
+
 ########################################
 #  Color Utilities
 from colorsys import hls_to_rgb
