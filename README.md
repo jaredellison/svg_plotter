@@ -10,14 +10,14 @@ This script takes information exported from Room EQ Wizard measurements and draw
 
 - Clone repo and install dependencies
 
-- ```bash
+  ```bash
   $ git clone https://github.com/jaredellison/svg_plotter
   $ pip install -r requirements.txt
   ```
 
 - Export data from Room EQ Wizard as a text file and copy to project's `data` directory.
 
-  ![export-measurement-txt-file](/documentation/export-measurement-txt-file.png)
+  ![export-measurement-txt-file](documentation/export-measurement-txt-file.png)
 
   ```bash
   $ cp path/to/measurement.txt data/
@@ -25,13 +25,13 @@ This script takes information exported from Room EQ Wizard measurements and draw
 
 - Run script to generate plot
 
-- ```bash
+  ```bash
   $ python svg_plotter.py
   ```
 
 - Inspect output plot and adjust ploting parameters in `svg_plotter.py` as desired
 
-- ```bash
+  ```bash
   $ open svg_output/data_plot.svg
   ```
 
@@ -63,54 +63,11 @@ Room EQ Wizard provides a way to visualize many measurements on a single plot bu
 
     For example, if there are 3 traces the colors will be:
 
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#cc6565"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#65cc65"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#6565cc"></div>
-
+    ![export-measurement-txt-file](documentation/colors-three.png)
+    
     And if there are 6 traces the colors will be:
-
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#cc6565"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#cccc65"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#65cc65"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#65cccc"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#6565cc"></div>
-    <div style="width: 2em;
-    				    height: 2em;
-        				display: inline-block;
-        				margin: .5em; 
-                background:#cc65cc"></div>
+    
+    ![export-measurement-txt-file](documentation/colors-six.png)
 
 ## Dependencies
 

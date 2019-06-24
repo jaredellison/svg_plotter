@@ -1,3 +1,12 @@
+#!/usr/bin/python3
+# coding=utf-8
+#
+# Author:  Jared Ellison
+# Site:  jaredellison.net
+# Purpose: Transform a 2D list of points into a SVG format bezier curve moving
+#          through each point on the curve.
+# Created: 06.23.2019
+
 '''
 ######################
 # Overview
