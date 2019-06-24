@@ -2,7 +2,7 @@
 #  Color Utilities
 from colorsys import hls_to_rgb
 
-def angle_to_hex_triplet(rotation, saturation=.5, luminance=.7):
+def angle_to_hex_triplet(rotation, saturation=.5, luminance=.6):
     '''
     This function takes an angle between 0 and 360 and outputs a string of hex for use
     as an html color.

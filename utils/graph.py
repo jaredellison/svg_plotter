@@ -78,7 +78,7 @@ class Graph:
             filename=self.file_name,
             size=(self.total_size[0] * px, self.total_size[1] * px),
             # Set debug false for production!
-            debug=True
+            debug=False
         )
 
         # Create svg drawing groups
@@ -362,7 +362,8 @@ class Graph:
         self.line_labels.add(msg)
 
     def draw_traces(self):
+        color_generator = get_trace_color(len(self.traces))
         for trace in self.traces:
             log_points = [list(self.log_scale(*pair)) for pair in trace["points"]]
             path_string = bspline.make_curve(log_points)
-            self.trace_paths.add(self.dwg.path(d=path_string, stroke='blue'))
+            self.trace_paths.add(self.dwg.path(d=path_string, stroke=next(color_generator)))
