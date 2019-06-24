@@ -330,14 +330,14 @@ class Graph:
         for item in line_list:
             text = int(item[0])
             start_point = item[1][0]
-            x_offset = -20
+            x_offset = -24
             y_offset = 4
             rotation = 0
             if text % 5 == 0:
                 self.draw_lable(
                     text,
                     start_point[0] + x_offset,
-                    start_point[1]+y_offset,
+                    start_point[1] + y_offset,
                     rotation,
                     **label_font)
 

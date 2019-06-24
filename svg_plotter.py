@@ -22,7 +22,7 @@ import os
 
 if __name__ == "__main__":
     #  Initialize graph
-    g = Graph(amp_range=(75, 105), file_name='svg_output/data_plot.svg')
+    g = Graph(amp_range=(75, 105), freq_range=(20, 22000), file_name='svg_output/data_plot.svg')
 
     source_dir = './data'
 
