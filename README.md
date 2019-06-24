@@ -17,7 +17,7 @@ This script takes information exported from Room EQ Wizard measurements and draw
 
 - Export data from Room EQ Wizard as a text file and copy to project's `data` directory.
 
-  ![export-measurement-txt-file](/Users/lucky_bloop/programming/python/svg_plotter/documentation/export-measurement-txt-file.png)
+  ![export-measurement-txt-file](/documentation/export-measurement-txt-file.png)
 
   ```bash
   $ cp path/to/measurement.txt data/
