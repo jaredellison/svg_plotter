@@ -10,7 +10,7 @@ This script takes information exported from Room EQ Wizard measurements and draw
 
 - Clone repo and install dependencies
 
-- ```bash
+  ```bash
   $ git clone https://github.com/jaredellison/svg_plotter
   $ pip install -r requirements.txt
   ```
@@ -25,13 +25,13 @@ This script takes information exported from Room EQ Wizard measurements and draw
 
 - Run script to generate plot
 
-- ```bash
+  ```bash
   $ python svg_plotter.py
   ```
 
 - Inspect output plot and adjust ploting parameters in `svg_plotter.py` as desired
 
-- ```bash
+  ```bash
   $ open svg_output/data_plot.svg
   ```
 
